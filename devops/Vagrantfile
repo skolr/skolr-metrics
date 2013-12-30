@@ -13,10 +13,13 @@ FORWARD_DOCKER_PORTS = ENV['FORWARD_DOCKER_PORTS']
 
 SSH_PRIVKEY_PATH = ENV["SSH_PRIVKEY_PATH"]
 
-Vagrant::Config.run do |config|
+Vagrant.configure("2") do |config|
   # Setup virtual machine box. This VM configuration code is always executed.
   config.vm.box = BOX_NAME
   config.vm.box_url = BOX_URI
+  config.vm.provision "ansible" do |ansible|
+      ansible.playbook = "provisioning/docker.yml"
+  end
 
   # Use the specified private key path if it is specified and not empty.
   if SSH_PRIVKEY_PATH
@@ -47,9 +50,6 @@ Vagrant::VERSION >= "1.1.0" and Vagrant.configure("2") do |config|
   config.vm.provider :aws do |aws, override|
     username = "ubuntu"
     override.vm.box_url = AWS_BOX_URI
-    override.vm.provision "ansible" do |ansible|
-	ansible.playbook = "provisioning/docker.yml"
-    end
     aws.access_key_id = ENV["AWS_ACCESS_KEY"]
     aws.secret_access_key = ENV["AWS_SECRET_KEY"]
     aws.keypair_name = ENV["AWS_KEYPAIR_NAME"]
@@ -60,9 +60,6 @@ Vagrant::VERSION >= "1.1.0" and Vagrant.configure("2") do |config|
   end
 
   config.vm.provider :rackspace do |rs, override|
-    override.vm.provision "ansible" do |ansible|
-	ansible.playbook = "provisioning/docker.yml"
-    end
     rs.username = ENV["RS_USERNAME"]
     rs.api_key  = ENV["RS_API_KEY"]
     rs.public_key_path = ENV["RS_PUBLIC_KEY"]
@@ -73,18 +70,19 @@ Vagrant::VERSION >= "1.1.0" and Vagrant.configure("2") do |config|
   config.vm.provider :vmware_fusion do |f, override|
     override.vm.box_url = VF_BOX_URI
     override.vm.synced_folder ".", "/vagrant", disabled: true
-    override.vm.provision "ansible" do |ansible|
-	ansible.playbook = "provisioning/docker.yml"
-    end
     f.vmx["displayName"] = "docker"
   end
 
   config.vm.provider :virtualbox do |vb, override|
-    override.vm.provision "ansible" do |ansible|
-	ansible.playbook = "provisioning/docker.yml"
-    end
     vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
     vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+  end
+end
+
+Vagrant.configure("2") do |config|
+  config.vm.define "dev1" do |dev|
+  end
+  config.vm.define "dev2" do |dev|
   end
 end
 
