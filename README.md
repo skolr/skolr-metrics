@@ -2,6 +2,11 @@
 
 1. Install virtualbox from https://www.virtualbox.org/ (or use your package manager)
 1. Install vagrant from http://www.vagrantup.com/ (or use your package manager)
+1. Install the box used for local development
+
+```
+vagrant box add ubuntu http://files.vagrantup.com/precise64.box
+```
 1. Install ansbile from http://www.ansibleworks.com/docs/intro_installation.html
    
   * Note: you will probably need a C compiler to install the dependencies.  If you are on a Mac, open XCode/Preferences and download Command Line Tools
